@@ -27,5 +27,5 @@ jobs:
 
     - name: execute python workflows from bash script
       env:
-        HOPSWORKSAPIKEY: ${{ secrets.HOPSWORKAPIKEY }}
+        HOPSWORKSAPIKEY: ${{ secrets.HOPSWORKSAPIKEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/FeaturePipeline.ipynb
