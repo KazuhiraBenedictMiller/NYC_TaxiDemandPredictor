@@ -27,8 +27,8 @@ def ValidateRawData(rides:pd.DataFrame, year:int, month:int) -> pd.DataFrame:
     #Keep only Rides for the Month
     ThisMonthStart = f"{year}-{month:02d}-01"
     NextMonthStart = f"{year}-{month+1:02d}-01" if month < 12 else f"{year+1}-01-01"
-    rides = rides[rides["PickupDatetime"] >= ThisMonthStart]
-    rides = rides[rides["PickupDatetime"] <= NextMonthStart]
+    rides = rides[rides["pickup_datetime"] >= ThisMonthStart]
+    rides = rides[rides["pickup_datetime"] <= NextMonthStart]
     
     return rides
 
@@ -63,7 +63,7 @@ def LoadRawData(year:int, months:Optional[List[int]] = None) -> pd.DataFrame:
         
         #Rename Columns
         rides_one_month = rides_one_month[["tpep_pickup_datetime", "PULocationID"]]
-        rides_one_month.rename(columns={"tpep_pickup_datetime":"PickupDatetime", "PULocationID":"PickupLocationID"}, inplace=True)
+        rides_one_month.rename(columns={"tpep_pickup_datetime":"pickup_datetime", "PULocationID":"pickup_location_id"}, inplace=True)
         
         #Validate the File
         rides_one_month = ValidateRawData(rides_one_month, year, month)
@@ -72,42 +72,42 @@ def LoadRawData(year:int, months:Optional[List[int]] = None) -> pd.DataFrame:
         rides = pd.concat([rides, rides_one_month])
         
     #Keep only Time and Origin of the Ride
-    rides = rides[["PickupDatetime","PickupLocationID"]]
+    rides = rides[["pickup_datetime","pickup_location_id"]]
     
     return rides
 
 def AddMissingSlots(aggrides:pd.DataFrame) -> pd.DataFrame:
     
-    locations = aggrides["PickupLocationID"].unique()
-    full_range = pd.date_range(aggrides["PickupHour"].min(), aggrides["PickupHour"].max(), freq = "H")
+    locations = aggrides["pickup_location_id"].unique()
+    full_range = pd.date_range(aggrides["pickup_hour"].min(), aggrides["pickup_hour"].max(), freq = "H")
     output = pd.DataFrame()
     
     for locid in tqdm(locations):
     
         #Keep only Rides for this Location ID
-        aggrides_i = aggrides.loc[aggrides["PickupLocationID"] == locid, ["PickupHour", "NumOfRides"]]
+        aggrides_i = aggrides.loc[aggrides["pickup_location_id"] == locid, ["pickup_hour", "numrides"]]
         
         #Adding Missing Dates with 0 in a Series
-        aggrides_i.set_index("PickupHour", inplace = True)
+        aggrides_i.set_index("pickup_hour", inplace = True)
         aggrides_i.index = pd.DatetimeIndex(aggrides_i.index)
         aggrides_i = aggrides_i.reindex(full_range, fill_value = 0)
         
         #Add Back Location ID Columns
-        aggrides_i["PickupLocationID"] = locid
+        aggrides_i["pickup_location_id"] = locid
         
         output = pd.concat([output, aggrides_i])
         
     #Move the PickupHour from Index to Column
-    output = output.reset_index().rename(columns = {"index":"PickupHour"})
+    output = output.reset_index().rename(columns = {"index":"pickup_hour"})
     
     return output
 
 def TransformRawDataIntoTSData(rides:pd.DataFrame) -> pd.DataFrame:
     
     #Sum Rides per Location and per Pickup Hour
-    rides["PickupHour"] = rides["PickupDatetime"].dt.floor("H")
-    aggrides = rides.groupby(["PickupHour", "PickupLocationID"]).size().reset_index()
-    aggrides.rename(columns = {0 : "NumOfRides"}, inplace = True)
+    rides["pickup_hour"] = rides["pickup_datetime"].dt.floor("H")
+    aggrides = rides.groupby(["pickup_hour", "pickup_location_id"]).size().reset_index()
+    aggrides.rename(columns = {0 : "numrides"}, inplace = True)
     
     #Add Rows for Locations, Pickup Hour with 0 Rides
     aggrides_allslots = AddMissingSlots(aggrides)
@@ -139,15 +139,15 @@ def GetCutoffIndeces(data:pd.DataFrame, nFeatures:int, SlidingFactor:int) -> lis
 
 def TransformALL(tsData:pd.DataFrame, nFeatures:int, SlidingFactor:int) -> pd.DataFrame:
     
-    assert set(tsData.columns) == {"PickupHour", "NumOfRides", "PickupLocationID"}
+    assert set(tsData.columns) == {"pickup_hour", "numrides", "pickup_location_id"}
     
-    locationIDs = tsData["PickupLocationID"].unique()
+    locationIDs = tsData["pickup_location_id"].unique()
     Features = pd.DataFrame()
     Targets = pd.DataFrame()
     
     for locid in tqdm(locationIDs):
         #Keep only Time-Series Data for this Location
-        tsDataOneLocation = tsData.loc[tsData["PickupLocationID"] == locid, ["PickupHour", "NumOfRides"]].sort_values(by = ["PickupHour"])
+        tsDataOneLocation = tsData.loc[tsData["pickup_location_id"] == locid, ["pickup_hour", "numrides"]].sort_values(by = ["pickup_hour"])
         
         #Pre-Compute Cutoff Indeces to Split DataFrame Rows
         indeces = GetCutoffIndeces(tsDataOneLocation, nFeatures, SlidingFactor)
@@ -159,16 +159,16 @@ def TransformALL(tsData:pd.DataFrame, nFeatures:int, SlidingFactor:int) -> pd.Da
         PickupHours = []
         
         for i, idx in enumerate(indeces):
-            X[i,:] = tsDataOneLocation.iloc[idx[0]:idx[1]]["NumOfRides"].values
-            Y[i] = tsDataOneLocation.iloc[idx[1]:idx[2]]["NumOfRides"].values
-            PickupHours.append(tsDataOneLocation.iloc[idx[1]]["PickupHour"])
+            X[i,:] = tsDataOneLocation.iloc[idx[0]:idx[1]]["numrides"].values
+            Y[i] = tsDataOneLocation.iloc[idx[1]:idx[2]]["numrides"].values
+            PickupHours.append(tsDataOneLocation.iloc[idx[1]]["pickup_hour"])
             
         #NumPy -> Pandas
-        FeaturesOneLocationDF = pd.DataFrame(X, columns = [f"Rides {i+1} Hours Before" for i in reversed(range(nFeatures))])
-        FeaturesOneLocationDF["PickupHour"] = PickupHours
-        FeaturesOneLocationDF["PickupLocationID"] = locid
+        FeaturesOneLocationDF = pd.DataFrame(X, columns = [f"rides_{i+1}_hours_before" for i in reversed(range(nFeatures))])
+        FeaturesOneLocationDF["pickup_hour"] = PickupHours
+        FeaturesOneLocationDF["pickup_location_id"] = locid
         
-        TargetsOneLocationDF = pd.DataFrame(Y, columns = ["Target Rides Next Hour"])
+        TargetsOneLocationDF = pd.DataFrame(Y, columns = ["target_rides_next_hour"])
 
         #Concatenate Results
         Features = pd.concat([Features, FeaturesOneLocationDF])
@@ -177,4 +177,4 @@ def TransformALL(tsData:pd.DataFrame, nFeatures:int, SlidingFactor:int) -> pd.Da
     Features.reset_index(inplace = True, drop = True)
     Targets.reset_index(inplace = True, drop = True)
     
-    return Features, Targets["Target Rides Next Hour"]
+    return Features, Targets["target_rides_next_hour"]

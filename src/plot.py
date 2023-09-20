@@ -9,11 +9,11 @@ def PlotOneRidesSample(features:pd.DataFrame, targets:pd.Series, exampleID: int,
     features_ = features.iloc[exampleID]
     targets_ = targets.iloc[exampleID]
     
-    TS_Columns = [c for c in features.columns if c.endswith("Hours Before")]
+    TS_Columns = [c for c in features.columns if c.endswith("hours_before")]
     TS_Values = [features_[c] for c in TS_Columns] + [targets_]
-    TS_Dates = pd.date_range(features_["PickupHour"] - timedelta(hours = len(TS_Columns)), features_["PickupHour"], freq = "H")
+    TS_Dates = pd.date_range(features_["pickup_hour"] - timedelta(hours = len(TS_Columns)), features_["pickup_hour"], freq = "H")
     
-    title = f'Pickup Hours = {features_["PickupHour"]}, Location ID = {features_["PickupLocationID"]}'
+    title = f'Pickup Hours = {features_["pickup_hour"]}, Location ID = {features_["pickup_location_id"]}'
     
     fig = px.line(x = TS_Dates, y = TS_Values, template = "plotly_dark", markers = True, title = title)
     

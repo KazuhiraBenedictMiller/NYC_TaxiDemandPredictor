@@ -63,7 +63,7 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
         TS_Data_i = TS_Data_i.sort_values(by = ["pickup_hour"])
         x[i,:] = TS_Data_i["num_rides"].values
         
-    Features = pd.DataFrame(x, columns = [f"Rides {i+1} Hours Before" for i in reversed(range(nFeatures))])
+    Features = pd.DataFrame(x, columns = [f"rides_{i+1}_hours_before" for i in reversed(range(nFeatures))])
     Features["pickup_hour"] = currentdate
     Features["pickup_location_id"] = LocationIDs
     

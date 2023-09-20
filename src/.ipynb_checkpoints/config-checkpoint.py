@@ -42,4 +42,4 @@ FeatureViewVersion = 1
 N_Features = 24*7*4
 
 ModelName = "taxi_demand_predictor_next_hour"
-ModelVersion = 2
+ModelVersion = 3
