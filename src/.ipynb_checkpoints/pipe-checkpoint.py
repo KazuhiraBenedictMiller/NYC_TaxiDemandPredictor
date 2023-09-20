@@ -3,8 +3,11 @@ import numpy as np
 from datetime import datetime
 
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.pipeline import make_pipeline as PPLN
 from sklearn.pipeline import Pipeline
+
+import lightgbm as lgb
 
 def AverageRidesLast4Weeks(x:pd.DataFrame) -> pd.DataFrame:
     
@@ -19,10 +22,10 @@ class TemporalFeatureEngineering(BaseEstimator, TransformerMixin):
     
     def transform(self, x, y=None):
         X = x.copy()
-        X["Hour"] = X["PickupHour"].dt.hour
-        X["DoW"] = X["PickupHour"].dt.dayofweek
+        X["Hour"] = X["pickup_hour"].dt.hour
+        X["DoW"] = X["pickup_hour"].dt.dayofweek
         
-        return X.drop(columns = ["PickupHour"], inplace=False)
+        return X.drop(columns = ["pickup_hour"], inplace=False)
     
 def MakePipeline(**Hyperparameters) -> Pipeline:
     

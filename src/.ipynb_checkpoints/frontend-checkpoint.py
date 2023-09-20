@@ -56,7 +56,6 @@ with st.spinner(text = "Downloading Shape File to Plot Taxi Zones"):
     st.sidebar.write("Shape File Was Downloaded")
     ProgressBar.progress(1/N_Steps)
     
-
 with st.spinner(text = "Fetching Batch of Inference Data"):
     Features = inference.LoadBatchOfFeaturesFromStore(currentdate)
     st.sidebar.write("Inference Features Fetched from the Store")
@@ -128,3 +127,21 @@ with st.spinner(text="Generating NYC Map"):
     
     st.pydeck_chart(r)
     ProgressBar.progress(6/N_Steps)
+    
+with st.spinner(text="Plotting TimeSeries Data"):
+    
+    row_indices = np.argsort(Results["predicted_demand"].values)[::-1]
+    nToPlot = 10
+    
+    #Plot Each Time-Series with the Prediction
+    for row_id in row_indices[:nToPlot]:
+        fig = plot.PlotOneRidesSample(
+            features=Features,
+            targets=Results["predicted_demand"],
+            exampleID=row_id,
+            predictions=pd.Series(Results["predicted_demand"])
+        )
+        
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True, width=1000)
+    
+    ProgressBar.progress(7/N_Steps)

@@ -56,7 +56,6 @@ with st.spinner(text = "Downloading Shape File to Plot Taxi Zones"):
     st.sidebar.write("Shape File Was Downloaded")
     ProgressBar.progress(1/N_Steps)
     
-
 with st.spinner(text = "Fetching Batch of Inference Data"):
     Features = inference.LoadBatchOfFeaturesFromStore(currentdate)
     st.sidebar.write("Inference Features Fetched from the Store")
