@@ -23,6 +23,7 @@ pydeck = "^0.8.0"
 geopandas = "^0.12.2"
 discordwebhook = "^1.0.3"
 fire = "^0.5.0"
+lab = "^7.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
