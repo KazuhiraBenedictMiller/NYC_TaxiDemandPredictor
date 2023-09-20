@@ -75,7 +75,7 @@ def LoadModelFromRegistry():
     
     ModelRegistry = Project.get_model_registry()
     
-    Model = ModelRegistry.get_model(name=config.FeatureViewName, version= config.FeatureViewVersion)
+    Model = ModelRegistry.get_model(name=config.ModelName, version= config.ModelVersion)
     
     ModelDir = Model.download()
     Model = joblib.load(Path(ModelDir) / "Model.pkl")
