@@ -67,11 +67,12 @@ with st.spinner(text = "Loading ML Model From the Registry"):
     st.sidebar.write("ML Model was Loaded from the Registry")
     ProgressBar.progress(3/N_Steps)
 
-with st.spinner(text = "Computing Model Prediction"):
-    Results = inference.GetModelPredictions(Model, Features)
+with st.spinner(text = "Computing Model Predictions"):
+    Results = inference.GetModelPredictions(model = Model, features = Features)
     st.sidebar.write("Model Predictions Arrived")
     ProgressBar.progress(4/N_Steps)
-    
+
+
 with st.spinner(text = "Perparing Data to Plot"):
     
     def Pseudocolor(val, minval, maxval, startcolor, endcolor):
