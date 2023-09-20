@@ -72,7 +72,6 @@ with st.spinner(text = "Computing Model Predictions"):
     st.sidebar.write("Model Predictions Arrived")
     ProgressBar.progress(4/N_Steps)
 
-
 with st.spinner(text = "Perparing Data to Plot"):
     
     def Pseudocolor(val, minval, maxval, startcolor, endcolor):

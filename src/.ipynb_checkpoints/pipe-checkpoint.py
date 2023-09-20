@@ -22,10 +22,10 @@ class TemporalFeatureEngineering(BaseEstimator, TransformerMixin):
     
     def transform(self, x, y=None):
         X = x.copy()
-        X["Hour"] = X["pickup_hour"].dt.hour
-        X["DoW"] = X["pickup_hour"].dt.dayofweek
+        X["Hour"] = X["PickupHour"].dt.hour
+        X["DoW"] = X["PickupHour"].dt.dayofweek
         
-        return X.drop(columns = ["pickup_hour"], inplace=False)
+        return X.drop(columns = ["PickupHour"], inplace=False)
     
 def MakePipeline(**Hyperparameters) -> Pipeline:
     
