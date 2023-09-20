@@ -46,7 +46,7 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     fetch_data_to = currentdate - timedelta(days=28)
     print(f"Fetching data backwards from {fetch_data_from} to {fetch_data_to}")
     
-    FeatureView = feature_store.get_feature_view(name=config.FEATURE_VIEW_NAME, version= config.FEATURE_VIEW_VERSION)
+    FeatureView = feature_store.get_feature_view(name=config.FeatureViewName, version= config.FeatureViewVersion)
     
     TS_Data = FeatureView.get_batch_data(start_time=(fetch_data_from - timedelta (days=1)), end_time=(fetch_data_to + timedelta (days=1)))
     TS_Data = TS_Data[TS_Data["pickup_hour"].between(fetch_data_from, fetch_data_to)]
@@ -75,7 +75,7 @@ def LoadModelFromRegistry():
     
     ModelRegistry = Project.get_model_registry()
     
-    Model = ModelRegistry.get_model(name=config.FEATURE_VIEW_NAME, version= config.FEATURE_VIEW_VERSION)
+    Model = ModelRegistry.get_model(name=config.FeatureViewName, version= config.FeatureViewVersion)
     
     ModelDir = Model.download()
     Model = joblib.load(Path(ModelDir) / "Model.pkl")
