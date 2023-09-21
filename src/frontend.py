@@ -82,7 +82,7 @@ with st.spinner(text = "Perparing Data to Plot"):
     
         return tuple(f*(b-a)+a for (a,b) in zip(startcolor, endcolor))
     
-    df = pd.merge(geo_df, Results, right_on="pickup_location_id", left_on="LocationIDs", how="inner")
+    df = pd.merge(geo_df, Results, right_on="pickup_location_id", left_on="LocationID", how="inner")
     
     BLACK, GREEN = (0,0,0), (0, 255, 0)
     
