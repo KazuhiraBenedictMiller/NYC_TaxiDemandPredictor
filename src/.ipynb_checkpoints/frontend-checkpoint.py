@@ -1,5 +1,5 @@
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 import numpy as np
@@ -22,7 +22,7 @@ import plot
 st.set_page_config(layout="wide")
 
 #Title
-currentdate = pd.to_datetime(datetime.utcnow()).floor("H")
+currentdate = pd.to_datetime(datetime.utcnow()).floor("H") - timedelta(weeks=52)
 st.title(f"Taxi Demand Prediction")
 st.header(f"{currentdate}")
 
