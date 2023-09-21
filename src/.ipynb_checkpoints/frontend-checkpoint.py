@@ -102,7 +102,7 @@ with st.spinner(text="Generating NYC Map"):
         bearing=8
     )
     
-    geojson = pdk.layer(
+    geojson = pdk.Layer(
         "GeoJsonLayer",
         df,
         opacity=0.25,
@@ -119,7 +119,7 @@ with st.spinner(text="Generating NYC Map"):
     
     tooltip = {"html":"<b>Zone:</b> [{LocationID}]{zone} <br/> <b>Predicted Rides:</b> {predicted_demand}"}
     
-    r = pdk.Deck(
+    r = pdk.Deck(        
         layers=[geojson],
         initial_view_state=INITIAL_VIEW_STATE,
         tooltip=tooltip
