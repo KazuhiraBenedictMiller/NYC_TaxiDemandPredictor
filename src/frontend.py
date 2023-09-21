@@ -94,12 +94,12 @@ with st.spinner(text = "Perparing Data to Plot"):
 with st.spinner(text="Generating NYC Map"):
     
     INITIAL_VIEW_STATE = pdk.ViewState(
-        latitude=48.7831,
+        latitude=40.7831,
         longitude=-73.9712,
         zoom=11,
         max_zoom=16,
         pitch=45,
-        bearing=8
+        bearing=0
     )
     
     geojson = pdk.Layer(
