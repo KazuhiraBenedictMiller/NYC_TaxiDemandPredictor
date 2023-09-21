@@ -22,6 +22,7 @@ def GetHopsworksProject() -> hopsworks.project.Project:
 def GetFeatureStore() -> FeatureStore:
     
     Project = GetHopsworksProject()
+    
     return Project.get_feature_store()
 
 def GetModelPredictions(model, features:pd.DataFrame) -> pd.DataFrame:
@@ -42,8 +43,8 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     
     #Read TimeSeries Data from the Feature Store
     
-    fetch_data_from = currentdate - timedelta(hours=1)
-    fetch_data_to = currentdate - timedelta(days=28)
+    fetch_data_to = currentdate - timedelta(hours=1)
+    fetch_data_from = currentdate - timedelta(days=28)
     print(f"Fetching data backwards from {fetch_data_from} to {fetch_data_to}")
     
     FeatureView = feature_store.get_feature_view(name=config.FeatureViewName, version= config.FeatureViewVersion)
@@ -68,7 +69,7 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     Features["pickup_location_id"] = LocationIDs
     
     return Features
-
+    
 def LoadModelFromRegistry():
     
     Project = GetHopsworksProject() 
