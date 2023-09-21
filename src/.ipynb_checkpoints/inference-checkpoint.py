@@ -54,9 +54,12 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     
     #Validate we are not Missing any Data in the Feature Store
     LocationIDs = TS_Data["pickup_location_id"].unique()
-    assert len(TS_Data) == nFeatures*len(LocationIDs), "Time-Series Data is Incomplete"
+    assert len(TS_Data) == nFeatures*len(LocationIDs), "Time-Series Data is Incomplete, make sure your Feature Pipeline is up and running"
     
     #Sort Data by Location and Time
+    TS_Data.sort_values(by=["pickup_location_id", "pickup_hour",], inplace = True)
+    
+    #Transpose Time-Series Data as a Feature Vector for each "picup_location_id"
     x = np.ndarray(shape=(len(LocationIDs), nFeatures), dtype=np.float32)
     
     for i, location in enumerate(LocationIDs):
@@ -67,6 +70,7 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     Features = pd.DataFrame(x, columns = [f"rides_{i+1}_hours_before" for i in reversed(range(nFeatures))])
     Features["pickup_hour"] = currentdate
     Features["pickup_location_id"] = LocationIDs
+    Features.sort_values(by=["pickup_location_id"], inplace = True)
     
     return Features
     
