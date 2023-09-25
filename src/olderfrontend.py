@@ -24,14 +24,14 @@ st.set_page_config(layout="wide")
 #Title
 currentdate = pd.to_datetime(datetime.utcnow()).floor("H") - timedelta(weeks=52)
 st.title(f"Taxi Demand Prediction")
-st.header(f"{currentdate} UTC")
+st.header(f"{currentdate}")
 
 #Plotting a Progress Bar to improve UI while Loading Time
 ProgressBar = st.sidebar.header("Working Progress")
 ProgressBar = st.sidebar.progress(0)
-N_Steps = 6
+N_Steps = 7
 
-def LoadShapeDataFile() -> gpd.geodataframe.GeoDataFrame:
+def LoadShapeDataFile():
     
     #Download File
     URL = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zones.zip"
@@ -51,39 +51,26 @@ def LoadShapeDataFile() -> gpd.geodataframe.GeoDataFrame:
     #Load and Return Shape File
     return gpd.read_file(paths.DATA_DIR / "taxi_zones/taxi_zones.shp").to_crs("epsg:4326")
 
-@st.cache_data
-def LoadFeatures(currentdate:datetime) -> pd.DataFrame:
-    return inference.LoadBatchOfFeaturesFromStore(currentdate)
-
-@st.cache_data
-def LoadPredictions(from_pickup_hour:datetime, to_pickup_hour:datetime) -> pd.DataFrame:
-    return inference.LoadPredictionsFromStore(from_pickup_hour, to_pickup_hour)
-
 with st.spinner(text = "Downloading Shape File to Plot Taxi Zones"):
     geo_df = LoadShapeDataFile()
     st.sidebar.write("Shape File Was Downloaded")
     ProgressBar.progress(1/N_Steps)
     
-with st.spinner(text = "Loading Model Predictions from the Store"):
-    PredictionsDF = LoadPredictions(from_pickup_hour = currentdate - timedelta(hours = 1), to_pickup_hour = currentdate)
-    st.sidebar.write("Model Predictions Arrived")
+with st.spinner(text = "Fetching Batch of Inference Data"):
+    Features = inference.LoadBatchOfFeaturesFromStore(currentdate)
+    st.sidebar.write("Inference Features Fetched from the Store")
     ProgressBar.progress(2/N_Steps)
+    print(f"{Features}")
     
-#Here we are implementing a Logic to check if the Predictions for the Current Hour have already been computed and are Available
-NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == currentdate].empty else True
-PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == (currentdate - timedelta(hours=1))].empty else True
+with st.spinner(text = "Loading ML Model From the Registry"):
+    Model = inference.LoadModelFromRegistry()
+    st.sidebar.write("ML Model was Loaded from the Registry")
+    ProgressBar.progress(3/N_Steps)
 
-if NextHourPredictionsReady:
-    PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == currentdate]
-
-elif PrevHourPredictionsReady:
-    #If Next Predictions didn't arrive we'll use the Previous Ones
-    PredictionsDF[PredictionsDF["pickup_hour"] == (currentdate - timedelta(hours=1))]
-    currentdate = currentdate - timedelta(hours=1)
-    st.subheader("The most recent Data is currently not available, using previously avilable ones.")
-    
-else:
-    raise Exception("Features are not available for the last 2 Hours, please check if the Pipeline is up and Running.")
+with st.spinner(text = "Computing Model Predictions"):
+    Results = inference.GetModelPredictions(model = Model, features = Features)
+    st.sidebar.write("Model Predictions Arrived")
+    ProgressBar.progress(4/N_Steps)
 
 with st.spinner(text = "Perparing Data to Plot"):
     
@@ -95,14 +82,14 @@ with st.spinner(text = "Perparing Data to Plot"):
     
         return tuple(f*(b-a)+a for (a,b) in zip(startcolor, endcolor))
     
-    df = pd.merge(geo_df, PredictionsDF, right_on="pickup_location_id", left_on="LocationID", how="inner")
+    df = pd.merge(geo_df, Results, right_on="pickup_location_id", left_on="LocationID", how="inner")
     
     BLACK, GREEN = (0,0,0), (0, 255, 0)
     
     df["color_scaling"] = df["predicted_demand"]
     max_pred, min_pred = df["color_scaling"] .max(), df["color_scaling"] .min()
     df["fill_color"] = df["color_scaling"].apply(lambda x:Pseudocolor(x, min_pred, max_pred, BLACK, GREEN))
-    ProgressBar.progress(3/N_Steps)
+    ProgressBar.progress(5/N_Steps)
     
 with st.spinner(text="Generating NYC Map"):
     
@@ -139,28 +126,22 @@ with st.spinner(text="Generating NYC Map"):
     )
     
     st.pydeck_chart(r)
-    ProgressBar.progress(4/N_Steps)
-    
-with st.spinner(text="Fetching Batch of Features used in the last run"):
-    
-    FeaturesDF = LoadFeatures(currentdate)
-    st.sidebar.write("Inference Features Fetched from the Store")
-    ProgressBar.progress(5/N_Steps)
+    ProgressBar.progress(6/N_Steps)
     
 with st.spinner(text="Plotting TimeSeries Data"):
     
-    row_indices = np.argsort(PredictionsDF["predicted_demand"].values)[::-1]
+    row_indices = np.argsort(Results["predicted_demand"].values)[::-1]
     nToPlot = 10
     
     #Plot Each Time-Series with the Prediction
     for row_id in row_indices[:nToPlot]:
         fig = plot.PlotOneRidesSample(
-            features=FeaturesDF,
-            targets=PredictionsDF["predicted_demand"],
+            features=Features,
+            targets=Results["predicted_demand"],
             exampleID=row_id,
-            predictions=pd.Series(PredictionsDF["predicted_demand"])
+            predictions=pd.Series(Results["predicted_demand"])
         )
         
         st.plotly_chart(fig, theme="streamlit", use_container_width=True, width=1000)
     
-    ProgressBar.progress(6/N_Steps)
+    ProgressBar.progress(7/N_Steps)

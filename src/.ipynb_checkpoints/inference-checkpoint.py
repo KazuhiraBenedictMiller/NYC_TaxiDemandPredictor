@@ -14,7 +14,8 @@ import sys
 sys.path.append("../src/")
 sys.path.append("../")
 import config
-
+import featurestoreapi
+    
 def GetHopsworksProject() -> hopsworks.project.Project:
     
     return hopsworks.login(project = config.HopsworksProjectName, api_key_value = config.HOPSWORKSAPIKEY)
@@ -86,3 +87,45 @@ def LoadModelFromRegistry():
     Model = joblib.load(Path(ModelDir) / "Model.pkl")
     
     return Model
+
+def LoadPredictionsFromStore(from_pickup_hour: datetime, to_pickup_hour: datetime) -> pd.DataFrame:
+
+    #Connects to the Feature Store and retrieves Model Predictions for all
+    #"pickup_location_id" and for the time period from "from_pickup_hour" to "to_pickup_hour"
+
+    FeatureStore = featurestoreapi.GetFeatureStore()
+
+    PredictionsFeatureGroup = FeatureStore.get_feature_group(
+        name = config.FeatureGroupModelPredictions,
+        version = 1,
+    )
+
+    try:
+        #create feature view since it does not exist yet
+        FeatureStore.create_feature_view(
+            name = config.FeatureViewModelPredictions,
+            version = 1,
+            query = PredictionsFeatureGroup.select_all()
+        )
+        
+    except:
+        print(f'Feature view {config.FeatureViewModelPredictions} already exist. Skipped creation.')
+        
+    PredictionsFeatureView = FeatureStore.get_feature_view(
+        name = config.FeatureViewModelPredictions,
+        version = 1
+    )
+    
+    print(f'Fetching Predictions for ù"pickup_hours" between {from_pickup_hour} and {to_pickup_hour}')
+    
+    Predictions = PredictionsFeatureView.get_batch_data(
+        start_time = from_pickup_hour - timedelta(days=1),
+        end_time = to_pickup_hour + timedelta(days=1)
+    )
+    
+    Predictions = Predictions[Predictions["pickup_hour"].between(from_pickup_hour, to_pickup_hour)]
+
+    # sort by `pick_up_hour` and `pickup_location_id`
+    Predictions.sort_values(by = ["pickup_hour", "pickup_location_id"], inplace = True)
+
+    return Predictions
