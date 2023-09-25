@@ -43,3 +43,5 @@ N_Features = 24*7*4
 
 ModelName = "taxi_demand_predictor_next_hour"
 ModelVersion = 1
+
+FeatureGroupModelPredictions = "model_predictions_feature_group"
