@@ -46,3 +46,5 @@ ModelVersion = 1
 
 FeatureGroupModelPredictions = "model_predictions_feature_group"
 FeatureViewModelPredictions = "model_predictions_feature_view"
+
+FeatureViewMonitoring = "model_monitoring_feature_view"
