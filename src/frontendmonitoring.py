@@ -49,7 +49,7 @@ with st.spinner("Plotting Aggregate MAE Hour-by-Hour"):
 
     fig = px.bar(
         HourlyMAE,
-        x="pickup_hour", y=MAE,
+        x="pickup_hour", y="MAE",
         template='plotly_dark',
     )
     
