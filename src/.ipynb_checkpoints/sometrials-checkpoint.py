@@ -16,7 +16,8 @@ sys.path.append("../src/")
 sys.path.append("../")
 
 import inference
+import paths
 
-currentdate = pd.to_datetime(datetime.utcnow()).floor("H")
+df = pd.read_parquet(paths.RAW_DATA_DIR / "rides_2023-06.parquet")
 
-features = inference.LoadBatchOfFeaturesFromStore(currentdate)
+print(df)

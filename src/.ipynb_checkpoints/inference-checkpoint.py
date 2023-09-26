@@ -97,14 +97,14 @@ def LoadPredictionsFromStore(from_pickup_hour: datetime, to_pickup_hour: datetim
 
     PredictionsFeatureGroup = FeatureStore.get_feature_group(
         name = config.FeatureGroupModelPredictions,
-        version = 1,
+        version = config.FeatureGroupModelPredictionsVersion,
     )
 
     try:
         #create feature view since it does not exist yet
         FeatureStore.create_feature_view(
             name = config.FeatureViewModelPredictions,
-            version = 1,
+            version = config.FeatureViewModelPredictionsVersion,
             query = PredictionsFeatureGroup.select_all()
         )
         

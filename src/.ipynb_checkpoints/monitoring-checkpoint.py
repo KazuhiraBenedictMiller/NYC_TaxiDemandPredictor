@@ -24,13 +24,13 @@ def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) 
     
     try:
         #Create Feature View since it doesn't exist
-        FeatureStore.create_feature_view(name = config.FeatureViewMonitoring, version = 1, query = query)
+        FeatureStore.create_feature_view(name = config.FeatureViewMonitoring, version = config.FeatureViewMonitoringVersion, query = query)
         
     except:
         print("Feature View already exist")
         
     #Feature View
-    MonitoringFeatureView = FeatureStore.get_feature_view(name = config.FeatureViewMonitoring, version = 1)
+    MonitoringFeatureView = FeatureStore.get_feature_view(name = config.FeatureViewMonitoring, version = config.FeatureViewMonitoringVersion)
     
     #Fetching Data from the Feature View
     #Fetch Predictions and Actual Values for the last 30 days

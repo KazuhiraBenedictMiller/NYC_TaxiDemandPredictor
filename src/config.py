@@ -45,6 +45,10 @@ ModelName = "taxi_demand_predictor_next_hour"
 ModelVersion = 1
 
 FeatureGroupModelPredictions = "model_predictions_feature_group"
-FeatureViewModelPredictions = "model_predictions_feature_view"
+FeatureGroupModelPredictionsVersion = 1
 
-FeatureViewMonitoring = "model_monitoring_feature_view"
+FeatureViewModelPredictions = "model_predictions_feature_view"
+FeatureViewModelPredictionsVersion = 1
+
+FeatureViewMonitoring = "monitoring_feature_view"
+FeatureViewMonitoringVersion = 1
