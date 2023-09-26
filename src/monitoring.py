@@ -35,6 +35,6 @@ def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) 
     #Fetching Data from the Feature View
     #Fetch Predictions and Actual Values for the last 30 days
     MonitoringDF = MonitoringFeatureView.get_batch_data(start_time = fromdate - timedelta(days=7), end_time = todate + timedelta(days=7))
-    MonitoringDF = MonitorDF[MonitoringDF["pickup_hour"].between(fromdate, todate)]
+    MonitoringDF = MonitoringDF[MonitoringDF["pickup_hour"].between(fromdate, todate)]
     
     return MonitoringDF
