@@ -55,7 +55,7 @@ with st.spinner("Plotting Aggregate MAE Hour-by-Hour"):
     
     st.plotly_chart(fig, theme="streamlit", use_container_width=True, width=1000)
 
-    ProgressBar.progress(2/N_STEPS)
+    ProgressBar.progress(2/N_Steps)
     
 with st.spinner("Plotting Hourly MAE for Top Locations"):
     
@@ -91,4 +91,4 @@ with st.spinner("Plotting Hourly MAE for Top Locations"):
         
         st.plotly_chart(fig, theme="streamlit", use_container_width=True, width=1000)
 
-    ProgressBar.progress(3/N_STEPS)
+    ProgressBar.progress(3/N_Steps)
