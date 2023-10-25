@@ -49,7 +49,6 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     print(f"Fetching data backwards from {fetch_data_from} to {fetch_data_to}")
     
     #Transforming TimeStamp Data to Datetime
-    
     fetch_data_from = pd.to_datetime(fetch_data_from, utc=True)
     fetch_data_to = pd.to_datetime(fetch_data_to, utc=True)
     
@@ -95,6 +94,10 @@ def LoadModelFromRegistry():
 
 def LoadPredictionsFromStore(from_pickup_hour: datetime, to_pickup_hour: datetime) -> pd.DataFrame:
 
+    #Transforming TimeStamp Data to Datetime
+    from_pickup_hour = pd.to_datetime(from_pickup_hour, utc=True)
+    to_pickup_hour = pd.to_datetime(to_pickup_hour, utc=True)
+    
     #Connects to the Feature Store and retrieves Model Predictions for all
     #"pickup_location_id" and for the time period from "from_pickup_hour" to "to_pickup_hour"
 

@@ -12,6 +12,10 @@ import featurestoreapi
 
 def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) -> pd.DataFrame:
     
+    #Transforming TimeStamp Data to Datetime
+    fromdate = pd.to_datetime(fromdate, utc=True)
+    todate = pd.to_datetime(todate, utc=True)
+    
     #Feature Groups we need to Merge
     PredictionsFeatureGroup = featurestoreapi.GetFeatureGroup(name = config.FeatureGroupModelPredictions)
     ActualsFeatureGroup = featurestoreapi.GetFeatureGroup(name = config.FeatureGroupName)
