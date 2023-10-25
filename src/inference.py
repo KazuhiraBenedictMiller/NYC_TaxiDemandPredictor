@@ -48,9 +48,14 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     fetch_data_from = currentdate - timedelta(days=28)
     print(f"Fetching data backwards from {fetch_data_from} to {fetch_data_to}")
     
+    #Transforming TimeStamp Data to Datetime
+    
+    fetch_data_from = pd.to_datetime(fetch_data_from, utc=True)
+    fetch_data_to = pd.to_datetime(fetch_data_to, utc=True)
+    
     FeatureView = feature_store.get_feature_view(name=config.FeatureViewName, version= config.FeatureViewVersion)
     
-    TS_Data = FeatureView.get_batch_data(start_time=(fetch_data_from - timedelta (days=1)), end_time=(fetch_data_to + timedelta (days=1)))
+    TS_Data = FeatureView.get_batch_data(start_time=(fetch_data_from - timedelta (days=1)), end_time=(fetch_data_to + timedelta(days = 1)))
     TS_Data = TS_Data[TS_Data["pickup_hour"].between(fetch_data_from, fetch_data_to)]
     
     #Validate we are not Missing any Data in the Feature Store
@@ -116,7 +121,7 @@ def LoadPredictionsFromStore(from_pickup_hour: datetime, to_pickup_hour: datetim
         version = 1
     )
     
-    print(f'Fetching Predictions for ù"pickup_hours" between {from_pickup_hour} and {to_pickup_hour}')
+    print(f'Fetching Predictions for "pickup_hours" between {from_pickup_hour} and {to_pickup_hour}')
     
     Predictions = PredictionsFeatureView.get_batch_data(
         start_time = from_pickup_hour - timedelta(days=1),
