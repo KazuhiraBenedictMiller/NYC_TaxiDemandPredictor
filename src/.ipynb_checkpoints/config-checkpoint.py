@@ -33,22 +33,22 @@ try:
 except:
     raise Exception("Create a .env File in the Parent Dir of the Project")
 
-FeatureGroupName = "ts_hourly_featuregroup"
+FeatureGroupName = "ts_hourly_featuregroup_updated"
 FeatureGroupVersion = 1
 
-FeatureViewName = "ts_hourly_featureview"
+FeatureViewName = "ts_hourly_featureview_updated"
 FeatureViewVersion = 1
 
 N_Features = 24*7*4
 
-ModelName = "taxi_demand_predictor_next_hour"
+ModelName = "taxi_demand_predictor_next_hour_updated"
 ModelVersion = 1
 
-FeatureGroupModelPredictions = "model_predictions_feature_group"
+FeatureGroupModelPredictions = "model_predictions_feature_group_updated"
 FeatureGroupModelPredictionsVersion = 1
 
-FeatureViewModelPredictions = "model_predictions_feature_view"
+FeatureViewModelPredictions = "model_predictions_feature_view_updated"
 FeatureViewModelPredictionsVersion = 1
 
-FeatureViewMonitoring = "monitoring_feature_view"
+FeatureViewMonitoring = "monitoring_feature_view_updated"
 FeatureViewMonitoringVersion = 1
