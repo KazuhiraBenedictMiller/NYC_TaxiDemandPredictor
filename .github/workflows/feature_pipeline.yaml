@@ -26,6 +26,13 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
 
     - name: execute python workflows from bash script
+      uses: nick-fields/retry@v2
+      
       env:
         HOPSWORKSAPIKEY: ${{ secrets.HOPSWORKSAPIKEY }}
-      run: poetry run jupyter nbconvert --to notebook --execute notebooks/FeaturePipeline.ipynb
+      
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: poetry run jupyter nbconvert --to notebook --execute notebooks/FeaturePipeline.ipynb
+
