@@ -23,10 +23,16 @@ jobs:
       uses: snok/install-poetry@v1
 
     - name: Install Dependencies
+      with: 
+        max_attemps: 3
+
       run: poetry install
       if: steps.cache.outputs.cache-hit != 'true'
 
     - name: execute python workflows from bash script
+      with: 
+        max_attemps: 3
+
       env:
         HOPSWORKSAPIKEY: ${{ secrets.HOPSWORKSAPIKEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/FeaturePipeline.ipynb

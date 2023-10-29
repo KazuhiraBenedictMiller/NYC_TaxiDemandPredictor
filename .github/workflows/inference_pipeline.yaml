@@ -17,7 +17,6 @@ jobs:
 
   inference_pipeline:
     runs-on: ubuntu-latest
-    retries: 3
 
     steps:
     - name: Checkout
@@ -47,9 +46,14 @@ jobs:
         echo "$HOME/.local/bin" >> $GITHUB_PATH
     
     - name: Install Dependencies
+      with: 
+        max_attemps: 3
       run: poetry install
 
     - name: execute python workflows from bash script
+      with: 
+        max_attemps: 3
+
       env:
         HOPSWORKSAPIKEY: ${{ secrets.HOPSWORKSAPIKEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/InferencePipeline.ipynb
