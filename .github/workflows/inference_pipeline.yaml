@@ -17,6 +17,8 @@ jobs:
 
   inference_pipeline:
     runs-on: ubuntu-latest
+    retries: 3
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3

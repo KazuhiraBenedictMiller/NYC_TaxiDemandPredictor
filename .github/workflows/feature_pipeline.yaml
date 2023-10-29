@@ -9,6 +9,7 @@ jobs:
   feature_pipeline:
   
     runs-on: ubuntu-latest
+    retries: 3
 
     steps:
     - uses: actions/checkout@v3
