@@ -44,17 +44,18 @@ def LoadBatchOfFeaturesFromStore(currentdate:datetime) -> pd.DataFrame:
     
     #Read TimeSeries Data from the Feature Store
     
-    fetch_data_to = currentdate - timedelta(hours=1)
-    fetch_data_from = currentdate - timedelta(days=28)
+    fetch_data_to = pd.to_datetime(currentdate - timedelta(hours=1), utc= True)
+    fetch_data_from = pd.to_datetime(currentdate - timedelta(days=28), utc= True)
     print(f"Fetching data backwards from {fetch_data_from} to {fetch_data_to}")
     
     #Transforming TimeStamp Data to Datetime
-    fetch_data_from = pd.to_datetime(fetch_data_from, utc=True)
-    fetch_data_to = pd.to_datetime(fetch_data_to, utc=True)
+    #fetch_data_from = pd.to_datetime(fetch_data_from, utc=True)
+    #fetch_data_to = pd.to_datetime(fetch_data_to, utc=True)
     
     FeatureView = feature_store.get_feature_view(name=config.FeatureViewName, version= config.FeatureViewVersion)
     
-    TS_Data = FeatureView.get_batch_data(start_time=(fetch_data_from - timedelta (days=1)), end_time=(fetch_data_to + timedelta(days = 1)))
+    TS_Data = FeatureView.get_batch_data(start_time=pd.to_datetime(fetch_data_from - timedelta (days=1), utc=True), end_time=pd.to_datetime(fetch_data_to + timedelta(days = 1), utc=True))
+    TS_Data["pickup_hour"] = pd.to_datetime(TS_Data["pickup_hour"], utc=True)
     TS_Data = TS_Data[TS_Data["pickup_hour"].between(fetch_data_from, fetch_data_to)]
     
     #Validate we are not Missing any Data in the Feature Store
@@ -130,6 +131,11 @@ def LoadPredictionsFromStore(from_pickup_hour: datetime, to_pickup_hour: datetim
         start_time = from_pickup_hour - timedelta(days=1),
         end_time = to_pickup_hour + timedelta(days=1)
     )
+    
+    #Ensure UTC-Awareness
+    Predictions["pickup_hour"] = pd.to_datetime(Predictions["pickup_hour"], utc=True)
+    from_pickup_hour = pd.to_datetime(from_pickup_hour, utc=True)
+    to_pickup_hour = pd.to_datetime(to_pickup_hour, utc=True)
     
     Predictions = Predictions[Predictions["pickup_hour"].between(from_pickup_hour, to_pickup_hour)]
 
