@@ -66,7 +66,7 @@ with st.spinner(text = "Downloading Shape File to Plot Taxi Zones"):
     ProgressBar.progress(1/N_Steps)
     
 with st.spinner(text = "Loading Model Predictions from the Store"):
-    PredictionsDF = LoadPredictions(from_pickup_hour = currentdate - timedelta(hours = 1), to_pickup_hour = currentdate)
+    PredictionsDF = LoadPredictions(from_pickup_hour = pd.to_datetime(currentdate - timedelta(hours = 1), utc=True), to_pickup_hour = pd.to_datetime(currentdate, utc=True))
     st.sidebar.write("Model Predictions Arrived")
     ProgressBar.progress(2/N_Steps)
 
