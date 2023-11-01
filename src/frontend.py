@@ -57,7 +57,7 @@ def LoadFeatures(currentdate:datetime) -> pd.DataFrame:
     return inference.LoadBatchOfFeaturesFromStore(currentdate)
 
 @st.cache_data
-def LoadPredictions(from_pickup_hour:datetime, to_pickup_hour:datetime) -> pd.DataFrame:
+def LoadPredictions(_from_pickup_hour:datetime, _to_pickup_hour:datetime) -> pd.DataFrame:
     return inference.LoadPredictionsFromStore(from_pickup_hour, to_pickup_hour)
 
 with st.spinner(text = "Downloading Shape File to Plot Taxi Zones"):
