@@ -71,21 +71,21 @@ with st.spinner(text = "Loading Model Predictions from the Store"):
     st.sidebar.write("Model Predictions Arrived")
     ProgressBar.progress(2/N_Steps)
 
-print(currentdate)
-print(PredictionsDF["pickup_hour"][6011])
-print(PredictionsDF)
+#print(currentdate)
+#print(PredictionsDF["pickup_hour"][6011])
+#print(PredictionsDF)
 
 #Here we are implementing a Logic to check if the Predictions for the Current Hour have already been computed and are Available
 NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)].empty else True
 PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)].empty else True
 
 if NextHourPredictionsReady:
-    PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == currentdate]
+    PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)]
 
 elif PrevHourPredictionsReady:
     #If Next Predictions didn't arrive we'll use the Previous Ones
-    PredictionsDF[PredictionsDF["pickup_hour"] == (currentdate - timedelta(hours=1))]
-    currentdate = currentdate - timedelta(hours=1)
+    PredictionsDF[PredictionsDF["pickup_hour"] == (pd.to_datetime(currentdate - timedelta(hours=1), utc=True))]
+    currentdate = pd.to_datetime(currentdate - timedelta(hours=1)
     st.subheader("The most recent Data is currently not available, using previously avilable ones.")
     
 else:
