@@ -76,8 +76,8 @@ print(PredictionsDF["pickup_hour"][6011])
 print(PredictionsDF)
 
 #Here we are implementing a Logic to check if the Predictions for the Current Hour have already been computed and are Available
-NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == currentdate].empty else True
-PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == (currentdate - timedelta(hours=1))].empty else True
+NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)].empty else True
+PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)].empty else True
 
 if NextHourPredictionsReady:
     PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == currentdate]
