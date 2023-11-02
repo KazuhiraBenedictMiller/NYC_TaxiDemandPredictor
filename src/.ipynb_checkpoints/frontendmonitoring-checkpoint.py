@@ -14,7 +14,7 @@ import monitoring
 st.set_page_config(layout = "wide")
 
 #Title
-currentdate = pd.to_datetime(datetime.utcnow()).floor("H") - timedelta(weeks=52)
+currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52)).floor("H")
 st.title(f"Taxi Demand Predictions Model Monitoring Dashboard")
 st.header(f"{currentdate} UTC")
 
