@@ -22,7 +22,8 @@ import plot
 st.set_page_config(layout="wide")
 
 #Title
-currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52), utc = True).floor("H")
+#currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52), utc = True).floor("H")
+currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52)).floor("H")
 
 st.title(f"Taxi Demand Prediction")
 st.header(f"{currentdate} UTC")
@@ -71,8 +72,9 @@ with st.spinner(text = "Loading Model Predictions from the Store"):
     ProgressBar.progress(2/N_Steps)
 
 print(currentdate)
-print(PredictionsDF["pickup_hour"][5338])
+print(PredictionsDF["pickup_hour"][6011])
 print(PredictionsDF)
+
 #Here we are implementing a Logic to check if the Predictions for the Current Hour have already been computed and are Available
 NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == currentdate].empty else True
 PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == (currentdate - timedelta(hours=1))].empty else True
