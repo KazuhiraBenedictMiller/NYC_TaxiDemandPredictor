@@ -22,6 +22,8 @@ import plot
 st.set_page_config(layout="wide")
 
 currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52)).floor("H")
+#currentdate = pd.to_datetime(currentdate, utc=True)
+#print(currentdate)
 
 #Title
 st.title(f"Taxi Demand Prediction")
@@ -69,19 +71,22 @@ with st.spinner(text = "Loading Model Predictions from the Store"):
     PredictionsDF = LoadPredictions(from_pickup_hour = currentdate - timedelta(hours = 1), to_pickup_hour = currentdate)
     st.sidebar.write("Model Predictions Arrived")
     ProgressBar.progress(2/N_Steps)
-
+    
 #Here we are implementing a Logic to check if the Predictions for the Current Hour have already been computed and are Available
 NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)].empty else True
 PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)].empty else True
 
+print(PredictionsDF["pickup_hour"].max())
+print(pd.to_datetime(currentdate, utc=True))
+
 if NextHourPredictionsReady:
     PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)]
-
+    
 elif PrevHourPredictionsReady:
     #If Next Predictions didn't arrive we'll use the Previous Ones
     PredictionsDF[PredictionsDF["pickup_hour"] == (pd.to_datetime(currentdate - timedelta(hours=1), utc=True))]
     currentdate = pd.to_datetime(currentdate - timedelta(hours=1))
-    st.subheader("The most recent Data is currently not available, using previously avilable ones.")
+    st.warning("The most recent Data is currently not available, using previously avilable ones.")
     
 else:
     raise Exception("Features are not available for the last 2 Hours, please check if the Pipeline is up and Running.")
