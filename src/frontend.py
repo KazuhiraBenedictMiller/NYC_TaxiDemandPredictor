@@ -23,8 +23,8 @@ st.set_page_config(layout="wide")
 
 currentdate = pd.to_datetime(datetime.utcnow() - timedelta(weeks=52)).floor("H")
 #currentdate = pd.to_datetime(currentdate, utc=True)
-print("printerino", currentdate)
-print("printerino", pd.to_datetime(currentdate, utc= True))
+#print("printerino", currentdate)
+#print("printerino", pd.to_datetime(currentdate, utc= True))
 
 #Title
 st.title(f"Taxi Demand Prediction")
@@ -77,9 +77,9 @@ with st.spinner(text = "Loading Model Predictions from the Store"):
 NextHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate, utc=True)].empty else True
 PrevHourPredictionsReady = False if PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)].empty else True
 
-print("printerinis", PredictionsDF["pickup_hour"].max())
-print("printerinis", pd.to_datetime(currentdate, utc=True))
-print(NextHourPredictionsReady)
+#print("printerinis", PredictionsDF["pickup_hour"].max())
+#print("printerinis", pd.to_datetime(currentdate, utc=True))
+#print(NextHourPredictionsReady)
 
 
 if NextHourPredictionsReady:
