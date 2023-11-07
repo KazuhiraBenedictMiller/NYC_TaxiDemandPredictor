@@ -79,7 +79,7 @@ if NextHourPredictionsReady:
     
 elif PrevHourPredictionsReady:
     #If Next Predictions didn't arrive we'll use the Previous Ones
-    PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)]
+    PredictionsDF = PredictionsDF[PredictionsDF["pickup_hour"] == pd.to_datetime(currentdate - timedelta(hours=1), utc=True)]
     currentdate = pd.to_datetime(currentdate - timedelta(hours=1))
     st.warning("The most recent Data is currently not available, using Data from the Previous Hour.")
     
