@@ -10,7 +10,7 @@ sys.path.append("../")
 import config
 import featurestoreapi
 
-def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) -> pd.DataFrame:
+def LoadPredictionsAndActualValuesFromStore(fromdate, todate) -> pd.DataFrame:
     
     #Transforming Datetime Data with UTC Awareness
     #fromdate = pd.to_datetime(fromdate, utc=True)
