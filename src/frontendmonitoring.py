@@ -28,9 +28,7 @@ def LoadPredictionsActuals(fromdate:datetime, todate:datetime) -> pd.DataFrame:
     return monitoring.LoadPredictionsAndActualValuesFromStore(fromdate, todate)
 
 with st.spinner("Fetching Model Predictions and Actual Values from the Store"):
-    
-    print(currentdate)
-    
+        
     MonitoringDF = LoadPredictionsActuals(fromdate = pd.to_datetime(currentdate - timedelta(days=14)), todate = pd.to_datetime(currentdate))
     st.sidebar.write("Model Predictions and Actual Values Arrived")
     ProgressBar.progress(1/N_Steps)
