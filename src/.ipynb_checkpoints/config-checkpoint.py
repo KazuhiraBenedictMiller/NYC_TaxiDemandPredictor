@@ -51,4 +51,4 @@ FeatureViewModelPredictions = "model_predictions_feature_view_updated"
 FeatureViewModelPredictionsVersion = 1
 
 FeatureViewMonitoring = "monitoring_feature_view_updated"
-FeatureViewMonitoringVersion = 1
+FeatureViewMonitoringVersion = 2
