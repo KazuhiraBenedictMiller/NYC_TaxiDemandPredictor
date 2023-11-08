@@ -21,7 +21,7 @@ def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) 
     ActualsFeatureGroup = featurestoreapi.GetFeatureGroup(name = config.FeatureGroupName)
     
     #Query to Join the 2 Feature Groups by "pickup_hour" and "location_id"
-    query = PredictionsFeatureGroup.select_all().join(ActualsFeatureGroup.select_all(), on = ["pickup_hour", "pickup_location_id"]).filter(PredictionsFeatureGroup["pickup_hour"] >= fromdate).filter(PredictionsFeatureGroup["pickup_hour"] <= todate)
+    query = PredictionsFeatureGroup.select_all().join(ActualsFeatureGroup.select_all(), on = ["pickup_hour", "pickup_location_id"]).filter(PredictionsFeatureGroup["pickup_hour"] >= pd.to_datetime(fromdate, utc=True)).filter(PredictionsFeatureGroup["pickup_hour"] <= pd.to_datetime(todate, utc=True))
     
     #Create the Feature View "Monitoring" if it doesn't exist yet
     FeatureStore = featurestoreapi.GetFeatureStore()
@@ -38,7 +38,10 @@ def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) 
     
     #Fetching Data from the Feature View
     #Fetch Predictions and Actual Values for the last 30 days
-    MonitoringDF = MonitoringFeatureView.get_batch_data(start_time = fromdate - timedelta(days=7), end_time = todate + timedelta(days=7))
-    MonitoringDF = MonitoringDF[MonitoringDF["pickup_hour"].between(fromdate, todate)]
+    new_startdate = pd.to_datetime(fromdate - timedelta(days=7))
+    new_todate = pd.to_datetime(todate + timedelta(days=7))
+    
+    MonitoringDF = MonitoringFeatureView.get_batch_data(start_time = new_startdate, end_time = new_todate)
+    MonitoringDF = MonitoringDF[MonitoringDF["pickup_hour"].between(pd.to_datetime(fromdate, utc=True), pd.to_datetime(todate, utc=True))]
     
     return MonitoringDF
