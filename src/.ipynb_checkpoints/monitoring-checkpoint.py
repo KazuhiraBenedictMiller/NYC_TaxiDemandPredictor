@@ -10,7 +10,7 @@ sys.path.append("../")
 import config
 import featurestoreapi
 
-def LoadPredictionsAndActualValuesFromStore(fromdate, todate) -> pd.DataFrame:
+def LoadPredictionsAndActualValuesFromStore(fromdate:datetime, todate:datetime) -> pd.DataFrame:
     
     #Transforming Datetime Data with UTC Awareness
     #fromdate = pd.to_datetime(fromdate, utc=True)
@@ -38,8 +38,8 @@ def LoadPredictionsAndActualValuesFromStore(fromdate, todate) -> pd.DataFrame:
     
     #Fetching Data from the Feature View
     #Fetch Predictions and Actual Values for the last 30 days
-    new_startdate = pd.to_datetime(fromdate - timedelta(days=7))
-    new_todate = pd.to_datetime(todate + timedelta(days=7))
+    new_startdate = pd.to_datetime(fromdate - timedelta(days=7), utc=False)
+    new_todate = pd.to_datetime(todate + timedelta(days=7), utc=False)
     
     MonitoringDF = MonitoringFeatureView.get_batch_data(start_time = new_startdate, end_time = new_todate)
     MonitoringDF = MonitoringDF[MonitoringDF["pickup_hour"].between(pd.to_datetime(fromdate, utc=True), pd.to_datetime(todate, utc=True))]
